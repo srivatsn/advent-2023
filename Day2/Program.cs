@@ -74,17 +74,17 @@ int FindPowerOfGame(Game game)
     return maxRed * maxGreen * maxBlue;
 }
 
-// int sumOfIndex = 0;
-// foreach (var game in games)
-// {
-//     var gameNumber = game.Number;
-//     if (IsValidGame(game))
-//     {
-//         sumOfIndex += gameNumber;
-//     }
-// }
+int sumOfIndex = 0;
+foreach (var game in games)
+{
+    var gameNumber = game.Number;
+    if (IsValidGame(game))
+    {
+        sumOfIndex += gameNumber;
+    }
+}
 
-// Console.WriteLine($"Sum of index: {sumOfIndex}");
+Console.WriteLine($"Sum of index: {sumOfIndex}");
 
 int sum = games.Sum(game => FindPowerOfGame(game));
 Console.WriteLine($"Sum of power: {sum}");
