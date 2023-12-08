@@ -45,40 +45,8 @@ for (int i = 0; i < lines.Length; i++)
 
 Console.WriteLine(sum);
 
-int GetNumber(int lineNumber, int index)
-{
-    if (index < 0 || index >= lines[lineNumber].Length || lineNumber < 0 || lineNumber >= lines.Length)
-    {
-        return -1;
-    }
-
-    var line = lines[lineNumber];
-    if (!char.IsDigit(line[index]))
-    {
-        return -1;
-    }
-
-    var startIndex = index;
-    var endIndex = index;
-    while (startIndex > 0 && char.IsDigit(line[startIndex - 1]))
-    {
-        startIndex--;
-    }
-
-    while (endIndex < line.Length - 1 && char.IsDigit(line[endIndex + 1]))
-    {
-        endIndex++;
-    }
-
-    return int.Parse(line.Substring(startIndex, endIndex - startIndex + 1));
-}
-
 List<int> GetNumbers(int lineNumber, int startIndex, int endIndex)
 {
-    // if (index < 0 || index >= lines[lineNumber].Length || lineNumber < 0 || lineNumber >= lines.Length)
-    // {
-    //     return -1;
-    // }
     if (lineNumber < 0 || lineNumber >= lines.Length)
     {
         return [];
