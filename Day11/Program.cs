@@ -1,6 +1,4 @@
-﻿using System.Xml.Serialization;
-
-var input = File.ReadAllText(args.Length > 0 ? args[0] : "input.txt");
+﻿var input = File.ReadAllText(args.Length > 0 ? args[0] : "input.txt");
 var lines = input.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
 
 // find index of rows that don't have a '#' in them and add a row of '.' to them
