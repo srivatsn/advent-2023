@@ -29,6 +29,110 @@ for (int i = 0; i < lines.Count - 1; i++)
 
 Console.WriteLine(count);
 
+
+double[,] matrix = new double[4, 4];
+double[] vector = new double[4];
+
+// Part 2
+// Got the math from this post - https://www.reddit.com/r/adventofcode/comments/18q40he/2023_day_24_part_2_a_straightforward_nonsolver/
+for (int i = 0; i < 4; i++)
+{
+    // The equations are of the form:
+    // (dy'-dy) X + (dx-dx') Y + (y-y') DX + (x'-x) DY = x' dy' - y' dx' - x dy + y dx
+    // where (x,y) and (x',y') are the points and (dx,dy) and (dx',dy') are the velocities
+    // The columns are X, Y, DX, DY, X
+
+    matrix[i, 0] = lines[i + 1].V.Y - lines[i].V.Y;
+    matrix[i, 1] = lines[i].V.X - lines[i + 1].V.X;
+    matrix[i, 2] = lines[i].P.Y - lines[i + 1].P.Y;
+    matrix[i, 3] = lines[i + 1].P.X - lines[i].P.X;
+    vector[i] = lines[i + 1].P.X * lines[i + 1].V.Y - lines[i + 1].P.Y * lines[i + 1].V.X - lines[i].P.X * lines[i].V.Y + lines[i].P.Y * lines[i].V.X;
+}
+
+var solution = SolveLinearEquations(matrix, vector);
+
+(double x, double y) = (solution[0], solution[1]);
+
+// Now do the same thing for Y and Z
+for (int i = 0; i < 4; i++)
+{
+    // The equations are of the form:
+    // (dz'-dz) Y + (dy-dy') Z + (y-y') DY + (x'-x) DZ = x' dz' - y' dy' - x dz + y dy
+    // where (x,y) and (x',y') are the points and (dy,dz) and (dy',dz') are the velocities
+    // The columns are Y, Z, DY, DZ, Y
+
+    matrix[i, 0] = lines[i + 1].V.Z - lines[i].V.Z;
+    matrix[i, 1] = lines[i].V.Y - lines[i + 1].V.Y;
+    matrix[i, 2] = lines[i].P.Z - lines[i + 1].P.Z;
+    matrix[i, 3] = lines[i + 1].P.Y - lines[i].P.Y;
+    vector[i] = lines[i + 1].P.Y * lines[i + 1].V.Z - lines[i + 1].P.Z * lines[i + 1].V.Y - lines[i].P.Y * lines[i].V.Z + lines[i].P.Z * lines[i].V.Y;
+}
+
+solution = SolveLinearEquations(matrix, vector);
+double z = solution[1];
+
+long total = (long)(Math.Round(x) + Math.Round(y) + Math.Round(z));
+Console.WriteLine($"Total - {total}");
+
+static double[] SolveLinearEquations(double[,] matrix, double[] vector)
+{
+    int length = vector.Length;
+
+    for (int i = 0; i < length; i++)
+    {
+        double maxElement = Math.Abs(matrix[i, i]);
+        int maxRow = i;
+        for (int k = i + 1; k < length; k++)
+        {
+            if (Math.Abs(matrix[k, i]) > maxElement)
+            {
+                maxElement = Math.Abs(matrix[k, i]);
+                maxRow = k;
+            }
+        }
+
+        for (int k = i; k < length; k++)
+        {
+            double tmp = matrix[maxRow, k];
+            matrix[maxRow, k] = matrix[i, k];
+            matrix[i, k] = tmp;
+        }
+
+        double tmp2 = vector[maxRow];
+        vector[maxRow] = vector[i];
+        vector[i] = tmp2;
+
+        for (int k = i + 1; k < length; k++)
+        {
+            double c = -matrix[k, i] / matrix[i, i];
+            for (int j = i; j < length; j++)
+            {
+                if (i == j)
+                {
+                    matrix[k, j] = 0;
+                }
+                else
+                {
+                    matrix[k, j] += c * matrix[i, j];
+                }
+            }
+            vector[k] += c * vector[i];
+        }
+    }
+
+    double[] solution = new double[length];
+    for (int i = length - 1; i >= 0; i--)
+    {
+        solution[i] = vector[i] / matrix[i, i];
+        for (int k = i - 1; k >= 0; k--)
+        {
+            vector[k] -= matrix[k, i] * solution[i];
+        }
+    }
+    return solution;
+}
+
+
 record Point(long X, long Y, long Z);
 record Velocity(long X, long Y, long Z);
 record Line
